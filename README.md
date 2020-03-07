@@ -26,7 +26,7 @@ docker设置的建议:
 
 ## INSTALL
     # wget https://github.com/hyperlau/autoGetEpisodes/raw/master/release/autoGetEpisodes_v1.0.zip  
-下载失败就git clone吧。。
+下载失败就git clone吧。。  
     # git clone https://github.com/hyperlau/autoGetEpisodes.git
 
 ## HOW TO USE
