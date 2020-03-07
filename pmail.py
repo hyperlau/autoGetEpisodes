@@ -37,7 +37,6 @@ class Pmail(object):
         emailObj = MIMEMultipart()
         # 将收件人地址用','连接
         emailTo = (",").join(toAddrList)
-        print(emailTo)
         # 邮件主题、发件人、收件人
         emailObj['Subject'] = Header(emailSubject, 'utf-8')
         emailObj['From'] = Header(emailFrom, 'utf-8')
@@ -54,29 +53,23 @@ class Pmail(object):
         :param charset:编码格式，默认为 utf-8
         :return:
         '''
-        # 创建邮件正文对象
-        content = MIMEText(emailContent, contentType, charset)
-        # 将邮件正文附加到根容器
-        emailObj.attach(content)
+        content = MIMEText(emailContent, contentType, charset)    # 创建邮件正文对象
+        emailObj.attach(content)     # 将邮件正文附加到根容器
      
      
     # 添加附件：附件可以为照片，也可以是文档
-    def attachPart(self,emailObj, partFilePath, partName):
+    def attachPart(self,emailObj, sourcePath, partName):
         '''
         :param emailObj:邮件对象
         :param sourcePath:附件源文件路径
         :param partName:附件名
         :return:
         '''
-        # 'octet-stream': binary data   创建附件对象
-        part = MIMEBase('application', 'octet-stream')
-        # 将附件源文件加载到附件对象
-        part.set_payload(open(partFilePath, 'rb').read())
+        part = MIMEBase('application', 'octet-stream')                          # 'octet-stream': binary data   创建附件对象
+        part.set_payload(open(sourcePath, 'rb').read())                        # 将附件源文件加载到附件对象
         encoders.encode_base64(part)
-        # 给附件添加头文件
-        part.add_header('Content-Disposition', 'attachment; filename="%s"' % partName)
-        # 将附件附加到根容器
-        emailObj.attach(part)
+        part.add_header('Content-Disposition', 'attachment; filename="%s"' % partName)     # 给附件添加头文件
+        emailObj.attach(part)                                                                # 将附件附加到根容器
      
      
     # 发送邮件
@@ -101,10 +94,10 @@ class Pmail(object):
             smtpObj.sendmail(self.fromAddr, toAddrList, emailObj.as_string())
             # 关闭连接
             smtpObj.quit()
-            print("发送成功！")
+            print("邮件发送成功！")
             return True
         except smtplib.SMTPException as e:
-            print("发送失败！",e)
+            print("邮件发送失败！",e)
             return False
  
  
@@ -116,15 +109,15 @@ if __name__ == "__main__":
     toAddrList = sys.argv[1]
     emailContent = sys.argv[2]
     emailSubject = sys.argv[3]
-    emailFrom = "msg@mailserver.com"
-    # smtp 邮件服务器
+    emailFrom = "msg@ap-baby.com"
+        # smtp 邮件服务器
     emailHost = "smtp.exmail.qq.com"
     # smtp 邮件服务器端口：SSL 连接
     hostPort = 465
     # 发件地址
-    fromAddr = "msg@mailserver.com"
-    # 密码
-    pwd = "mailPwd"
+    fromAddr = "msg@ap-baby.com"
+    # 发件地址的授权码，而非密码
+    pwd = "Rj###99987"
  
     mail=Pmail(emailHost,hostPort,fromAddr,pwd)
     emailObj = mail.getEmailObj(emailSubject, emailFrom, [toAddrList])

@@ -214,14 +214,15 @@ class GetEpisodes(object):
 
     def downloadFiles(self):
         self.readCacheFile()
-        mailContent='共'+str(len(self.downloadList))+'个文件被添加到下载队列:\n'
+        if len(self.downloadList)>0 and self.config.mailNotify:
+            mailContent='共'+str(len(self.downloadList))+'个文件被添加到下载队列:\n'
         for j,i in enumerate(self.downloadList):
             logging.info('添加下载任务：'+i['fileName']+'\nmagnetURL:'+i['magUrl'])
             aria2DownloadID=self.download(i['fileName'],i['magUrl'])
             logging.info('Aria2任务ID：'+aria2DownloadID)
-            if self.config.mailNotify:
+            if len(self.downloadList)>0 and self.config.mailNotify:
                 mailContent+=str(j+1)+". "+i['fileName']+"\n"
-        if self.config.mailNotify:
+        if len(self.downloadList)>0 and self.config.mailNotify:
             mail=Pmail(config.smtpServerHost,config.smtpServerPort,config.mailFrom,config.smtpPwd)
             emailObj = mail.getEmailObj(config.mailSub, config.mailFrom, [config.mailTo])
             mail.attachContent(emailObj, mailContent)
