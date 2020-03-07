@@ -1,6 +1,8 @@
 # autoGetEpisodes
 自动跟踪并下载美剧资源，支持邮件通知  
 
+## 2020.3.7   v1.0 稳定版发布
+
 ##
 基于Python3编写，从https://txmeiju.com 搜索关键词 ，筛选出剧集的magnet链接，调用aria2下载资源  
 代码比较简单，根据配置文件生成剧集的缓存文件，然后根据缓存文件来下载剧集
@@ -23,7 +25,9 @@ docker设置的建议:
 ~~”您好，我家宽带没有公网IP，但我需要远程查看家里的视频监控设备，请帮我分配一个“~~
 
 ## INSTALL
-git clone https://github.com/hyperlau/autoGetEpisodes.git
+    # wget https://github.com/hyperlau/autoGetEpisodes/raw/master/release/autoGetEpisodes_v1.0.zip  
+下载失败就git clone吧。。
+    # git clone https://github.com/hyperlau/autoGetEpisodes.git
 
 ## HOW TO USE
 
