@@ -34,7 +34,6 @@ class GetConfig(object):
             config.smtpPwd=config.get('global','smtpPwd')
             config.mailFrom=config.get('global','mailFrom')
             config.mailTo=config.get('global','mailTo')
-            print(config.mailTo)
             config.mailSub=config.get('global','mailSub')
 
         # 找出配置文件里的剧集配置
@@ -203,7 +202,7 @@ class GetEpisodes(object):
                         })
                     logging.debug('添加到下载列表：\nFileName：'+s+'\nmagUrl:'+magUrl)
                     # 修改skip为True
-        #            cacheFile.set(s,'skip','yes')
+                    cacheFile.set(s,'skip','yes')
             with open(cacheFilePath,'w') as f:
                 cacheFile.write(f)
 
@@ -218,8 +217,8 @@ class GetEpisodes(object):
         mailContent='共'+str(len(self.downloadList))+'个文件被添加到下载队列:\n'
         for j,i in enumerate(self.downloadList):
             logging.info('添加下载任务：'+i['fileName']+'\nmagnetURL:'+i['magUrl'])
-        #    aria2DownloadID=self.download(i['fileName'],i['magUrl'])
-        #    logging.info('Aria2任务ID：'+aria2DownloadID)
+            aria2DownloadID=self.download(i['fileName'],i['magUrl'])
+            logging.info('Aria2任务ID：'+aria2DownloadID)
             if self.config.mailNotify:
                 mailContent+=str(j+1)+". "+i['fileName']+"\n"
         if self.config.mailNotify:
