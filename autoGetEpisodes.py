@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-# coding=utf-8
+
+# -*-coding:utf-8-*-
+
+
 import time
 import getopt
 import os
@@ -11,6 +14,7 @@ import requests
 from requests.adapters import HTTPAdapter
 from bs4 import BeautifulSoup
 from pyaria2 import Aria2RPC
+from pmail import Pmail
 
 # 读配置文件
 class GetConfig(object):
@@ -21,9 +25,20 @@ class GetConfig(object):
         # 读取配置文件
         print('Load Config...')
         config=configparser.ConfigParser()
-        config.read(self.configFile)
-        config.episodesList=[]
+        config.read(self.configFile, encoding='utf-8')
+        # 邮件通知
+        config.mailNotify=config.getboolean('global','mailNotify')
+        if config.mailNotify:
+            config.smtpServerHost=config.get('global','smtpServerHost')
+            config.smtpServerPort=config.get('global','smtpServerPort')
+            config.smtpPwd=config.get('global','smtpPwd')
+            config.mailFrom=config.get('global','mailFrom')
+            config.mailTo=config.get('global','mailTo')
+            print(config.mailTo)
+            config.mailSub=config.get('global','mailSub')
+
         # 找出配置文件里的剧集配置
+        config.episodesList=[]
         episodesConfigSections=config.sections()
         config.episodesList=[i for i in episodesConfigSections if i !='global'];
         return(config)
@@ -108,7 +123,6 @@ class prepareCacheFile(object):
             # 根据keyword_1筛选链接
             if re.search(keyWord_1,i.span.string):
                 results.append({
-                   # 'name':episodesName,
                     'magUrl':epTexts['href'],
                     'fileName':i.span.string
                 })
@@ -130,7 +144,7 @@ class prepareCacheFile(object):
             # 写入缓存文件
             # 前面初始化的时候已经创建了缓存文件，所以直接read
             cacheFileName=self.getCacheFileAbsPath(i)
-            epiCache.read(cacheFileName)
+            epiCache.read(cacheFileName, encoding='utf-8')
             for j in episodeInfo:
                 logging.debug(j)
                 # 跳过存在的配置
@@ -178,7 +192,7 @@ class GetEpisodes(object):
             cacheFilePath=os.path.abspath(self.config.get('global','cacheDir')+'/'+i+'.cache')
             logging.debug('读取缓存文件'+cacheFilePath)
             cacheFile=configparser.ConfigParser()
-            cacheFile.read(cacheFilePath)
+            cacheFile.read(cacheFilePath, encoding='utf-8')
             for s in cacheFile.sections():
                 # 跳过skip的文件
                 if cacheFile.getboolean(s,'skip') != True:
@@ -189,7 +203,7 @@ class GetEpisodes(object):
                         })
                     logging.debug('添加到下载列表：\nFileName：'+s+'\nmagUrl:'+magUrl)
                     # 修改skip为True
-                    cacheFile.set(s,'skip','yes')
+        #            cacheFile.set(s,'skip','yes')
             with open(cacheFilePath,'w') as f:
                 cacheFile.write(f)
 
@@ -201,13 +215,19 @@ class GetEpisodes(object):
 
     def downloadFiles(self):
         self.readCacheFile()
-        for i in self.downloadList:
+        mailContent='共'+str(len(self.downloadList))+'个文件被添加到下载队列:\n'
+        for j,i in enumerate(self.downloadList):
             logging.info('添加下载任务：'+i['fileName']+'\nmagnetURL:'+i['magUrl'])
-            aria2DownloadID=self.download(i['fileName'],i['magUrl'])
-            logging.info('Aria2任务ID：'+aria2DownloadID)
+        #    aria2DownloadID=self.download(i['fileName'],i['magUrl'])
+        #    logging.info('Aria2任务ID：'+aria2DownloadID)
+            if self.config.mailNotify:
+                mailContent+=str(j+1)+". "+i['fileName']+"\n"
+        if self.config.mailNotify:
+            mail=Pmail(config.smtpServerHost,config.smtpServerPort,config.mailFrom,config.smtpPwd)
+            emailObj = mail.getEmailObj(config.mailSub, config.mailFrom, [config.mailTo])
+            mail.attachContent(emailObj, mailContent)
+            mail.sendEmail(emailObj, config.mailTo.split(","))
 
-
-#class SendEmail(object):
 
 
 if __name__=='__main__':
