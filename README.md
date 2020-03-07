@@ -1,9 +1,8 @@
 # autoGetEpisodes
-自动跟踪并下载美剧资源
+自动跟踪并下载美剧资源，支持邮件通知  
 
 ##
-基于Python3编写，从https://txmeiju.com 搜索关键词 ，筛选出剧集的magnet链接，调用aria2下载资源
-后续会添加邮件通知功能
+基于Python3编写，从https://txmeiju.com 搜索关键词 ，筛选出剧集的magnet链接，调用aria2下载资源  
 代码比较简单，根据配置文件生成剧集的缓存文件，然后根据缓存文件来下载剧集
 
 ** 建议跑在NAS的Ubuntu Docker里 ,添加cron任务定时执行 **  
@@ -93,4 +92,5 @@ git clone https://github.com/hyperlau/autoGetEpisodes.git
 
 # 注意事项：  
 1 如果生成缓存后修改了配置文件里已经存在的剧集配置的keyword，需要删除对应的缓存文件重新生成  
-2 配置文件里的路径要用绝对路径
+2 配置文件里的路径要用绝对路径  
+3 邮件通知建议用qq邮箱，不用改代码，如果是普通SMTP服务器的话代码要小改一下
