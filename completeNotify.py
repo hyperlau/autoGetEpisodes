@@ -6,7 +6,7 @@ from autoGetEpisodes import GetConfig
 from pmail import Pmail
 from pyaria2 import Aria2RPC
 
-if (sys.argv[2]==0):
+if (sys.argv[2]=='0'):
     exit()
 
 # 字节数转换成可读单位
