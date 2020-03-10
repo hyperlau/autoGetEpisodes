@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-
 # -*-coding:utf-8-*-
-
 
 import time
 import getopt
@@ -35,7 +33,6 @@ class GetConfig(object):
             config.mailFrom=config.get('global','mailFrom')
             config.mailTo=config.get('global','mailTo')
             config.mailSub=config.get('global','mailSub')
-
         # 找出配置文件里的剧集配置
         config.episodesList=[]
         episodesConfigSections=config.sections()
@@ -52,7 +49,6 @@ class logInit(object):
             filename=os.path.abspath(config.get('global','logFile')),
             filemode="a"
         )
-
 
 
 # 根据配置文件来抓取url，写入缓存文件
@@ -84,7 +80,6 @@ class prepareCacheFile(object):
     def getCacheFileAbsPath(self,episodeName):
         return(self.cacheDir+'/'+episodeName+'.cache')
 
- 
     # 获取搜索结果,然后筛选所有符合keyword_1要求的magnetUrl
     def getEpisodesUrls(self,searchUrl,episodesName,keyWord_1):
         head={}
@@ -157,14 +152,13 @@ class prepareCacheFile(object):
                 logging.info('['+j['fileName']+'] 写入：')
                 logging.info('magnetURL='+j['magUrl'])
                 logging.info('skip=no')
-            
+            # 写入缓存文件
             with open(cacheFileName,'w') as cacheFile:
                 epiCache.write(cacheFile)
 
 
 # 使用Aria2下载剧集
 class GetEpisodes(object):
-
     def __init__(self,config):
         self.config=config
         # 初始化 aria2 rpc
@@ -172,18 +166,18 @@ class GetEpisodes(object):
         self.aria2Token=self.config.get('global','aria2Token')
         self.aria2Url=self.config.get('global','aria2Url')
         self.downloadDir=os.path.abspath(self.config.get('global','downloadDir'))
-        self.jsonrpc=Aria2RPC(url=self.aria2Url,token=self.aria2Token)
-        self.jsonrpcOptions = {
+        self.xmlrpc=Aria2RPC(url=self.aria2Url,token=self.aria2Token)
+        self.xmlrpcOptions = {
             'dir': self.downloadDir
         }
 
     def download(self,name,url):
-        self.jsonrpcOptions['out']=name
-        jsonrpcReturn = self.jsonrpc.addUri(
+        self.xmlrpcOptions['out']=name
+        xmlrpcReturn = self.xmlrpc.addUri(
             [url],
-            options=self.jsonrpcOptions
+            options=self.xmlrpcOptions
         )
-        return(jsonrpcReturn)
+        return(xmlrpcReturn)
 
     def readCacheFile(self):
         self.downloadList=[]
@@ -205,12 +199,9 @@ class GetEpisodes(object):
                     cacheFile.set(s,'skip','yes')
             with open(cacheFilePath,'w') as f:
                 cacheFile.write(f)
-
-
         logging.debug('下载列表共包含如下 ' + str(len(self.downloadList))+' 条记录：')
         for j in self.downloadList:
             logging.debug(j)
-
 
     def downloadFiles(self):
         self.readCacheFile()
@@ -229,7 +220,6 @@ class GetEpisodes(object):
             mail.sendEmail(emailObj, config.mailTo.split(","))
 
 
-
 if __name__=='__main__':
     if len(sys.argv)<2:
         print('usage:')
@@ -245,7 +235,6 @@ if __name__=='__main__':
         prepareCacheFile(config).writeCacheFile()
         logging.info('===缓存文件准备完成===')
         print('===缓存文件准备完成===')
-        
     elif sys.argv[1] == '-c':
         config=GetConfig().getConfig()
         logInit(config)
@@ -259,8 +248,6 @@ if __name__=='__main__':
         g=GetEpisodes(config)
         g.downloadFiles()
         print('===添加下载任务完成===')
-
-
     else:
         print('usage:')
         print(sys.argv[0]+' -g     just only generate cache file')
