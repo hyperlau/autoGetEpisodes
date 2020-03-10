@@ -1,6 +1,7 @@
 # autoGetEpisodes
 自动跟踪并下载美剧资源，支持邮件通知  
 
+## 2020.3.11  v1.1 增加下载完成通知功能
 ## 2020.3.7   v1.0 稳定版发布
 
 ##
@@ -26,7 +27,8 @@ docker设置的建议:
 
 ## INSTALL
     # wget https://github.com/hyperlau/autoGetEpisodes/raw/master/release/autoGetEpisodes_v1.0.zip  
-下载失败就git clone吧。。  
+
+下载失败就git clone吧。。   
     # git clone https://github.com/hyperlau/autoGetEpisodes.git
 
 ## HOW TO USE
@@ -84,6 +86,10 @@ docker设置的建议:
 以后每次运行-c参数就可以了  
 添加到aria2的文件的skip标志会自动置为yes
 当有新的剧集的时候就会只添加新的剧集到aria2里
+
+# 下载完成后通知
+如需要启用此功能，请去掉aria2配置文件如下选项的注释符号（#）：  
+    on-download-complete=/usr/local/autoGetEpisodes/completeNotify.py
 
 # 关于cron定时执行
     22 * * * * export LANG='C.UTF-8'; /usr/local/autoGetEpisodes/autoGetEpisodes.py -c  
